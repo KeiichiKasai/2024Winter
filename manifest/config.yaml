@@ -1,0 +1,12 @@
+host: "localhost"
+port: "8080"
+mysql_info:
+  user: "root"
+  password: "zx1913683154"
+  port: "3306"
+  db_name: "winter"
+redis_info:
+  addr: "localhost:6379"
+  password: "zx1913683154"
+zap_info:
+  path: "./zap.txt"

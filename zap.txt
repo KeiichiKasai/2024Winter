@@ -1,0 +1,8 @@
+{"level":"\u001b[31mERROR\u001b[0m","ts":"2024-01-20 15:52:17","msg":"a"}
+{"level":"\u001b[34mINFO\u001b[0m","ts":"2024-01-20 16:13:40","msg":"zap initial success"}
+{"level":"\u001b[31mERROR\u001b[0m","ts":"2024-01-20 16:13:40","msg":"MySQL initial failed"}
+{"level":"\u001b[34mINFO\u001b[0m","ts":"2024-01-20 16:13:40","msg":"MySQL initial success"}
+{"level":"\u001b[34mINFO\u001b[0m","ts":"2024-01-20 16:13:40","msg":"Redis initial success"}
+{"level":"\u001b[34mINFO\u001b[0m","ts":"2024-01-20 16:15:10","msg":"zap initial success"}
+{"level":"\u001b[34mINFO\u001b[0m","ts":"2024-01-20 16:15:10","msg":"MySQL initial success"}
+{"level":"\u001b[34mINFO\u001b[0m","ts":"2024-01-20 16:15:10","msg":"Redis initial success"}
