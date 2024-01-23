@@ -13,5 +13,11 @@ func InitRouter() {
 	r.POST("/login", service.LogIn)
 	r.POST("/logOut", service.LogOut)
 	r.POST("/forget", service.Forget)
-
+	u := r.Group("/user")
+	{
+		u.GET("/info")
+		u.POST("/info")
+	}
+	u.POST("/info")
+	r.Run(":8080")
 }
