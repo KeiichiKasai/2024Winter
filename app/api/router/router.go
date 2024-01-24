@@ -14,10 +14,11 @@ func InitRouter() {
 	r.POST("/logOut", service.LogOut)
 	r.POST("/forget", service.Forget)
 	u := r.Group("/user")
+	u.Use(middleware.JWT())
 	{
 		u.GET("/info")
 		u.POST("/info")
 	}
-	u.POST("/info")
+
 	r.Run(":8080")
 }

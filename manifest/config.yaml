@@ -10,3 +10,6 @@ redis_info:
   password: "zx1913683154"
 zap_info:
   path: "./zap.txt"
+crypt_info:
+  key: "0123456789abcdef0123456789abcdef"
+  iv: "1234567890123456"

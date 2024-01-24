@@ -2,6 +2,7 @@ package initialize
 
 import (
 	"2024Winter/app/api/global"
+	"2024Winter/model"
 	"fmt"
 	"github.com/go-redis/redis/v8"
 	"github.com/jinzhu/gorm"
@@ -22,6 +23,7 @@ func InitMySQL() {
 		global.Logger.Error("MySQL initial failed")
 		return
 	}
+	global.MDB.AutoMigrate(&model.UserInfo{})
 	global.Logger.Info("MySQL initial success")
 }
 
