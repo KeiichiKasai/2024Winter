@@ -10,11 +10,9 @@ import (
 )
 
 var logger = global.Logger
-var mdb = global.MDB
-var rdb = global.RDB
 
 func CreateUser(user *model.UserInfo) error {
-	tx := mdb.Begin()
+	tx := global.MDB.Begin()
 	if tx.Error != nil {
 		tx.Rollback()
 		return tx.Error
@@ -31,7 +29,7 @@ func CreateUser(user *model.UserInfo) error {
 		logger.Info("crypt failed:" + err.Error())
 		return err
 	}
-	err = mdb.Where("username = ?", user.Username).First(&temp).Error
+	err = global.MDB.Where("username = ?", user.Username).First(&temp).Error
 	if err != gorm.ErrRecordNotFound && err != nil {
 		tx.Rollback()
 		return errors.New(consts.MySQLExist)
@@ -41,7 +39,7 @@ func CreateUser(user *model.UserInfo) error {
 		Password: password,
 		Phone:    phone,
 	}
-	err = mdb.Create(&temp).Error
+	err = global.MDB.Create(&temp).Error
 	if err != nil {
 		logger.Error("mysql insert failed" + err.Error())
 		tx.Rollback()
@@ -54,14 +52,14 @@ func CreateUser(user *model.UserInfo) error {
 	return nil
 }
 func GetUserByUsername(username string) (*model.UserInfo, error) {
-	tx := mdb.Begin() //开启事务
+	tx := global.MDB.Begin() //开启事务
 
 	if tx.Error != nil { //检查事务是否正常开启
 		tx.Rollback()
 		return nil, tx.Error
 	}
 	var user model.UserInfo
-	if err := mdb.Where("username = ?", username).First(&user).Error; err != nil {
+	if err := global.MDB.Where("username = ?", username).First(&user).Error; err != nil {
 		tx.Rollback()
 		return nil, err
 	}
@@ -72,12 +70,12 @@ func GetUserByUsername(username string) (*model.UserInfo, error) {
 	return &user, nil
 }
 func UpdateUser(user *model.UserInfo) error {
-	tx := mdb.Begin()
+	tx := global.MDB.Begin()
 	if tx.Error != nil {
 		tx.Rollback()
 		return tx.Error
 	}
-	if err := mdb.
+	if err := global.MDB.
 		Model(&model.UserInfo{}).
 		Updates(user).
 		Where("username = ?", user.Username).Error; err != nil {
