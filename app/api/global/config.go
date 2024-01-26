@@ -1,12 +1,13 @@
 package global
 
 type Config struct {
-	Host      string      `mapstructure:"host"`
-	Port      string      `mapstructure:"port"`
-	MysqlInfo MySQLConfig `mapstructure:"mysql_info"`
-	RedisInfo RedisConfig `mapstructure:"redis_info"`
-	ZapInfo   ZapConfig   `mapstructure:"zap_info"`
-	CryptInfo CryptConfig `mapstructure:"crypt_info"`
+	Host        string      `mapstructure:"host"`
+	Port        string      `mapstructure:"port"`
+	MysqlInfo   MySQLConfig `mapstructure:"mysql_info"`
+	RedisInfo   RedisConfig `mapstructure:"redis_info"`
+	ZapInfo     ZapConfig   `mapstructure:"zap_info"`
+	CryptInfo   CryptConfig `mapstructure:"crypt_info"`
+	TokenSecret string      `mapstructure:"token_secret"`
 }
 type ZapConfig struct {
 	Path string `mapstructure:"path"`

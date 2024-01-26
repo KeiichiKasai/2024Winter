@@ -8,7 +8,6 @@ import (
 	"2024Winter/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-	"strconv"
 )
 
 var logger = global.Logger
@@ -60,6 +59,7 @@ func LogIn(c *gin.Context) {
 	err := c.ShouldBind(&user)
 	if err != nil {
 		logger.Warn("shouldBind failed:" + err.Error())
+		return
 	}
 	if user.Username == "" || user.Password == "" {
 		c.JSON(500, gin.H{
@@ -92,7 +92,7 @@ func LogIn(c *gin.Context) {
 		})
 		return
 	}
-	token, err := middleware.GenToken(user.Username)
+	token, err := middleware.GenToken(user.Username, user.Role)
 	if err != nil {
 		c.JSON(500, gin.H{
 			"code":  "0",
@@ -205,38 +205,12 @@ func GetInfo(c *gin.Context) {
 			Uid:      user.Uid,
 			Username: user.Username,
 			Address:  user.Address,
-			Gender:   user.Gender,
-			Birthday: user.Birthday,
 		},
 	})
 }
 
 func ChangeInfo(c *gin.Context) {
 	address := c.PostForm("address")
-	genderStr := c.PostForm("gender")
-	birthdayStr := c.PostForm("birthday")
-	if address == "" || genderStr == "" || birthdayStr == "" {
-		c.JSON(500, gin.H{
-			"code": "0",
-			"msg":  "信息不全",
-		})
-	}
-	gender, err := strconv.Atoi(genderStr)
-	if err != nil {
-		c.JSON(500, gin.H{
-			"code": "0",
-			"msg":  "性别错误",
-		})
-		return
-	}
-	birthday, err := utils.ParseBirthday(birthdayStr)
-	if err != nil {
-		c.JSON(500, gin.H{
-			"code": "0",
-			"msg":  "生日格式错误",
-		})
-		return
-	}
 	username := c.GetString("username")
 	usr, err := dao.GetUserByUsername(username)
 	if err != nil {
@@ -252,8 +226,6 @@ func ChangeInfo(c *gin.Context) {
 		Password: usr.Password,
 		Phone:    usr.Phone,
 		Address:  address,
-		Gender:   gender,
-		Birthday: birthday,
 	}
 	err = dao.UpdateUser(temp)
 	if err != nil {

@@ -14,6 +14,7 @@ var logger = global.Logger
 func CreateUser(user *model.UserInfo) error {
 	tx := global.MDB.Begin()
 	if tx.Error != nil {
+		logger.Error("tx open failed")
 		tx.Rollback()
 		return tx.Error
 	}
@@ -29,7 +30,7 @@ func CreateUser(user *model.UserInfo) error {
 		logger.Info("crypt failed:" + err.Error())
 		return err
 	}
-	err = global.MDB.Where("username = ?", user.Username).First(&temp).Error
+	err = tx.Where("username = ?", user.Username).First(&temp).Error
 	if err != gorm.ErrRecordNotFound && err != nil {
 		tx.Rollback()
 		return errors.New(consts.MySQLExist)
@@ -39,13 +40,14 @@ func CreateUser(user *model.UserInfo) error {
 		Password: password,
 		Phone:    phone,
 	}
-	err = global.MDB.Create(&temp).Error
+	err = tx.Create(&temp).Error
 	if err != nil {
 		logger.Error("mysql insert failed" + err.Error())
 		tx.Rollback()
 		return err
 	}
 	if err = tx.Commit().Error; err != nil { //提交事务并判断是否成功提交
+		logger.Error("tx close failed")
 		tx.Rollback()
 		return err
 	}
@@ -55,15 +57,17 @@ func GetUserByUsername(username string) (*model.UserInfo, error) {
 	tx := global.MDB.Begin() //开启事务
 
 	if tx.Error != nil { //检查事务是否正常开启
+		logger.Error("tx open failed")
 		tx.Rollback()
 		return nil, tx.Error
 	}
 	var user model.UserInfo
-	if err := global.MDB.Where("username = ?", username).First(&user).Error; err != nil {
+	if err := tx.Where("username = ?", username).First(&user).Error; err != nil {
 		tx.Rollback()
 		return nil, err
 	}
 	if err := tx.Commit().Error; err != nil {
+		logger.Error("tx close failed")
 		tx.Rollback()
 		return nil, err
 	}
@@ -72,10 +76,11 @@ func GetUserByUsername(username string) (*model.UserInfo, error) {
 func UpdateUser(user *model.UserInfo) error {
 	tx := global.MDB.Begin()
 	if tx.Error != nil {
+		logger.Error("tx open failed")
 		tx.Rollback()
 		return tx.Error
 	}
-	if err := global.MDB.
+	if err := tx.
 		Model(&model.UserInfo{}).
 		Updates(user).
 		Where("username = ?", user.Username).Error; err != nil {
@@ -84,6 +89,7 @@ func UpdateUser(user *model.UserInfo) error {
 		return err
 	}
 	if err := tx.Commit().Error; err != nil { //提交事务并判断是否成功提交
+		logger.Error("tx close failed")
 		tx.Rollback()
 		return err
 	}

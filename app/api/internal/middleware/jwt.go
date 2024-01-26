@@ -1,6 +1,8 @@
 package middleware
 
 import (
+	"2024Winter/app/api/global"
+	"2024Winter/consts"
 	"errors"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
@@ -9,22 +11,22 @@ import (
 	"time"
 )
 
-const TokenExpireDuration = time.Hour * 2
-
-var secret = []byte("急急如律令")
+var secret = []byte(global.C.TokenSecret)
 
 type MyClaims struct {
 	jwt.StandardClaims
+	role int
 }
 
-func GenToken(username string) (string, error) {
+func GenToken(username string, role int) (string, error) {
 	c := MyClaims{
 
 		jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(TokenExpireDuration).Unix(),
+			ExpiresAt: time.Now().Add(consts.TokenExpireDuration).Unix(),
 			Issuer:    "Lanshan Studio",
 			Subject:   username,
 		},
+		role,
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, c)
@@ -80,7 +82,7 @@ func JWT() func(c *gin.Context) {
 		// 将当前请求的username信息保存到请求的上下文c上
 
 		c.Set("username", mc.Subject)
-
+		c.Set("role", mc.role)
 		c.Next()
 	}
 }

@@ -13,3 +13,4 @@ zap_info:
 crypt_info:
   key: "0123456789abcdef0123456789abcdef"
   iv: "1234567890123456"
+token_secret: "LanshanStudio"

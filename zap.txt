@@ -44,3 +44,6 @@
 {"level":"\u001b[34mINFO\u001b[0m","ts":"2024-01-25 16:03:13","msg":"zap initial success"}
 {"level":"\u001b[34mINFO\u001b[0m","ts":"2024-01-25 16:03:13","msg":"MySQL initial success"}
 {"level":"\u001b[34mINFO\u001b[0m","ts":"2024-01-25 16:03:13","msg":"Redis initial success"}
+{"level":"\u001b[34mINFO\u001b[0m","ts":"2024-01-25 16:10:26","msg":"zap initial success"}
+{"level":"\u001b[34mINFO\u001b[0m","ts":"2024-01-25 16:10:26","msg":"MySQL initial success"}
+{"level":"\u001b[34mINFO\u001b[0m","ts":"2024-01-25 16:10:26","msg":"Redis initial success"}
