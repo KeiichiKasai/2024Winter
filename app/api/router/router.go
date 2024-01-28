@@ -28,16 +28,20 @@ func InitRouter() {
 		u.Use(middleware.CheckRole0())
 		u.GET("/info", service.GetInfo)
 		u.POST("/info", service.ChangeInfo)
+		u.GET("/cart", service.GetCart)
 		g := u.Group("/good")
 		{
 			g.GET("/all", service.GetGoods)
 			g.GET("/search", service.SearchGoods)
+			g.POST("/cart", service.AddCart)
+			g.DELETE("/cart", service.DelCart)
+			g.POST("/trade", service.Buy)
 		}
 	}
 
 	err := r.Run(":8080")
 	if err != nil {
 		global.Logger.Warn("router init failed")
-		return
+		panic(err)
 	}
 }

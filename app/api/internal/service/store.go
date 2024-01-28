@@ -43,6 +43,7 @@ func PushGood(c *gin.Context) {
 		"msg":  "添加商品成功",
 	})
 }
+
 func GetOwnGood(c *gin.Context) {
 	username := c.GetString("username")
 	user, err := dao.GetUserByUsername(username)
