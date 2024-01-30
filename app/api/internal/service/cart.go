@@ -1,6 +1,7 @@
 package service
 
 import (
+	"2024Winter/app/api/global"
 	"2024Winter/app/api/internal/dao"
 	"2024Winter/model"
 	"github.com/gin-gonic/gin"
@@ -28,7 +29,7 @@ func AddCart(c *gin.Context) {
 	var cart model.Cart
 	err := c.ShouldBind(&cart)
 	if err != nil {
-		logger.Warn("shouldBind failed:" + err.Error())
+		global.Logger.Warn("shouldBind failed:" + err.Error())
 		return
 	}
 	cart.Username = username

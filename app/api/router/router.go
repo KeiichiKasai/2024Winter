@@ -16,19 +16,18 @@ func InitRouter() {
 	r.POST("/forget", service.Forget)
 	s := r.Group("/store")
 	{
-		s.Use(middleware.JWT())
-		s.Use(middleware.CheckRole1())
+		s.Use(middleware.JWT(), middleware.CheckRole1())
 		s.POST("/push", service.PushGood)
 		s.GET("/all", service.GetOwnGood)
 
 	}
 	u := r.Group("/user")
 	{
-		u.Use(middleware.JWT())
-		u.Use(middleware.CheckRole0())
+		u.Use(middleware.JWT(), middleware.CheckRole0())
 		u.GET("/info", service.GetInfo)
 		u.POST("/info", service.ChangeInfo)
 		u.GET("/cart", service.GetCart)
+		u.POST("/recharge", service.Recharge)
 		g := u.Group("/good")
 		{
 			g.GET("/all", service.GetGoods)

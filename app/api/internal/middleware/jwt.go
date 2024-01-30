@@ -15,18 +15,16 @@ var secret = []byte(global.C.TokenSecret)
 
 type MyClaims struct {
 	jwt.StandardClaims
-	role int
 }
 
-func GenToken(username string, role int) (string, error) {
+func GenToken(username string, role string) (string, error) {
 	c := MyClaims{
 
 		jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(consts.TokenExpireDuration).Unix(),
-			Issuer:    "Lanshan Studio",
+			Issuer:    role,
 			Subject:   username,
 		},
-		role,
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, c)
@@ -82,7 +80,7 @@ func JWT() func(c *gin.Context) {
 		// 将当前请求的username信息保存到请求的上下文c上
 
 		c.Set("username", mc.Subject)
-		c.Set("role", mc.role)
+		c.Set("role", mc.Issuer)
 		c.Next()
 	}
 }

@@ -1,11 +1,14 @@
 package middleware
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+)
 
 func CheckRole1() func(c *gin.Context) {
 	return func(c *gin.Context) {
-		role := c.GetInt("role")
-		if role != 1 {
+		role := c.GetString("role")
+		if role != "1" {
+			c.JSON(500, "无权限")
 			c.Abort()
 			return
 		}
@@ -14,8 +17,9 @@ func CheckRole1() func(c *gin.Context) {
 }
 func CheckRole0() func(c *gin.Context) {
 	return func(c *gin.Context) {
-		role := c.GetInt("role")
-		if role != 0 {
+		role := c.GetString("role")
+		if role != "0" {
+			c.JSON(500, "无权限")
 			c.Abort()
 			return
 		}

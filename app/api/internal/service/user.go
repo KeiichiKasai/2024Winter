@@ -8,26 +8,27 @@ import (
 	"2024Winter/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
+	"strconv"
 )
-
-var logger = global.Logger
 
 func Register(c *gin.Context) {
 	var user model.UserInfo
 	err := c.ShouldBind(&user)
 	if err != nil {
-		logger.Warn("shouldBind failed:" + err.Error())
+		global.Logger.Warn("should bind failed")
+		return
 	}
+
 	if user.Username == "" || user.Password == "" {
 		c.JSON(500, gin.H{
-			"code": "0",
+			"code": 0,
 			"msg":  "用户名或密码为空",
 		})
 		return
 	}
 	if len(user.Phone) != 11 {
 		c.JSON(500, gin.H{
-			"code": "0",
+			"code": 0,
 			"msg":  "手机号不合法",
 		})
 		return
@@ -35,7 +36,7 @@ func Register(c *gin.Context) {
 	_, err = dao.GetUserByUsername(user.Username)
 	if err != gorm.ErrRecordNotFound {
 		c.JSON(500, gin.H{
-			"code": "0",
+			"code": 0,
 			"msg":  "用户已存在",
 		})
 		return
@@ -43,13 +44,13 @@ func Register(c *gin.Context) {
 	err = dao.CreateUser(&user)
 	if err != nil {
 		c.JSON(500, gin.H{
-			"code": "0",
+			"code": 0,
 			"msg":  "注册失败",
 		})
 		return
 	}
 	c.JSON(200, gin.H{
-		"code": "1",
+		"code": 1,
 		"msg":  "注册成功",
 	})
 }
@@ -58,12 +59,12 @@ func LogIn(c *gin.Context) {
 	var user model.UserInfo
 	err := c.ShouldBind(&user)
 	if err != nil {
-		logger.Warn("shouldBind failed:" + err.Error())
+		global.Logger.Warn("shouldBind failed:" + err.Error())
 		return
 	}
 	if user.Username == "" || user.Password == "" {
 		c.JSON(500, gin.H{
-			"code":  "0",
+			"code":  0,
 			"msg":   "用户名或密码为空",
 			"token": "null",
 		})
@@ -73,7 +74,7 @@ func LogIn(c *gin.Context) {
 	temp, err = dao.GetUserByUsername(user.Username)
 	if err != nil {
 		c.JSON(500, gin.H{
-			"code":  "0",
+			"code":  0,
 			"msg":   "用户不存在",
 			"token": "null",
 		})
@@ -81,28 +82,30 @@ func LogIn(c *gin.Context) {
 	}
 	password, err := utils.Decrypt(temp.Password)
 	if err != nil {
-		logger.Warn("解密错误：" + err.Error())
+		global.Logger.Warn("解密错误：" + err.Error())
 		return
 	}
 	if password != user.Password {
 		c.JSON(500, gin.H{
-			"code":  "0",
+			"code":  0,
 			"msg":   "密码错误",
 			"token": "null",
 		})
 		return
 	}
-	token, err := middleware.GenToken(user.Username, user.Role)
+
+	role := strconv.Itoa(temp.Role)
+	token, err := middleware.GenToken(user.Username, role)
 	if err != nil {
 		c.JSON(500, gin.H{
-			"code":  "0",
+			"code":  0,
 			"msg":   "无法生成token",
 			"token": "null",
 		})
 		return
 	}
 	c.JSON(200, gin.H{
-		"code":  "1",
+		"code":  1,
 		"msg":   "登录成功",
 		"token": token,
 	})
@@ -113,18 +116,18 @@ func Forget(c *gin.Context) {
 	var user model.UserInfo
 	err := c.ShouldBind(&user)
 	if err != nil {
-		logger.Warn("shouldBind failed:" + err.Error())
+		global.Logger.Warn("shouldBind failed:" + err.Error())
 	}
 	if user.Username == "" {
 		c.JSON(500, gin.H{
-			"code": "0",
+			"code": 0,
 			"msg":  "用户名或密码为空",
 		})
 		return
 	}
 	if len(user.Phone) != 11 {
 		c.JSON(500, gin.H{
-			"code": "0",
+			"code": 0,
 			"msg":  "手机号不合法",
 		})
 		return
@@ -133,32 +136,32 @@ func Forget(c *gin.Context) {
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			c.JSON(500, gin.H{
-				"code": "0",
+				"code": 0,
 				"msg":  "用户不存在",
 			})
 			return
 		}
 		c.JSON(500, gin.H{
-			"code": "0",
+			"code": 0,
 			"msg":  "查找用户出错",
 		})
 		return
 	}
 	phone, err := utils.Decrypt(usr.Phone)
 	if err != nil {
-		logger.Warn("解密错误：" + err.Error())
+		global.Logger.Warn("解密错误：" + err.Error())
 		return
 	}
 	if phone != usr.Phone {
 		c.JSON(500, gin.H{
-			"code": "0",
+			"code": 0,
 			"msg":  "验证失败",
 		})
 		return
 	}
 	newPassStr, err := utils.Encrypt(newPass)
 	if err != nil {
-		logger.Warn("加密错误：" + err.Error())
+		global.Logger.Warn("加密错误：" + err.Error())
 		return
 	}
 	temp := &model.UserInfo{
@@ -170,20 +173,20 @@ func Forget(c *gin.Context) {
 	err = dao.UpdateUser(temp)
 	if err != nil {
 		c.JSON(500, gin.H{
-			"code": "0",
+			"code": 0,
 			"msg":  "修改失败",
 		})
 		return
 	}
 	c.JSON(200, gin.H{
-		"code": "1",
+		"code": 1,
 		"msg":  "修改成功",
 	})
 }
 
 func LogOut(c *gin.Context) {
 	c.JSON(200, gin.H{
-		"code": "1",
+		"code": 1,
 		"msg":  "clear jwt-token",
 		"user": c.GetString("username"),
 	})
@@ -194,17 +197,22 @@ func GetInfo(c *gin.Context) {
 	user, err := dao.GetUserByUsername(username)
 	if err != nil {
 		c.JSON(500, gin.H{
-			"code": "0",
+			"code": 0,
 			"msg":  "获取用户个人信息失败",
 		})
 		return
 	}
+	role := "顾客"
+	if user.Role != 0 {
+		role = "店铺"
+	}
 	c.JSON(200, gin.H{
-		"code": "1",
-		"msg": model.UserInfo{
-			Uid:      user.Uid,
-			Username: user.Username,
-			Address:  user.Address,
+		"code": 1,
+		"msg": gin.H{
+			"Uid":      user.Uid,
+			"Username": user.Username,
+			"Address":  user.Address,
+			"Role":     role,
 		},
 	})
 }
@@ -215,7 +223,7 @@ func ChangeInfo(c *gin.Context) {
 	usr, err := dao.GetUserByUsername(username)
 	if err != nil {
 		c.JSON(500, gin.H{
-			"code": "0",
+			"code": 0,
 			"msg":  "获取用户个人信息失败",
 		})
 		return
@@ -230,13 +238,13 @@ func ChangeInfo(c *gin.Context) {
 	err = dao.UpdateUser(temp)
 	if err != nil {
 		c.JSON(500, gin.H{
-			"code": "0",
+			"code": 0,
 			"msg":  "更改用户个人信息失败",
 		})
 		return
 	}
 	c.JSON(200, gin.H{
-		"code": "1",
+		"code": 1,
 		"msg":  "更改用户个人信息成功",
 	})
 }

@@ -23,6 +23,9 @@ func InitMySQL() {
 		global.Logger.Error("MySQL initial failed")
 		return
 	}
+	global.MDB.AutoMigrate(&model.Good{})
+	global.MDB.AutoMigrate(&model.Wallet{})
+	global.MDB.AutoMigrate(&model.Cart{})
 	global.MDB.AutoMigrate(&model.UserInfo{})
 	global.Logger.Info("MySQL initial success")
 }

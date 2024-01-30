@@ -2,7 +2,7 @@ package model
 
 type Wallet struct {
 	Username string  `form:"username,omitempty" gorm:"not null"`
-	Balance  float64 `form:"balance,omitempty" gorm:"not null"`
+	Balance  float64 `form:"balance,omitempty" gorm:"default :0"`
 }
 type Cart struct {
 	Username string  `form:"username,omitempty" gorm:"not null"`

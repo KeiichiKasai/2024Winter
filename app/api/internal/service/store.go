@@ -1,6 +1,7 @@
 package service
 
 import (
+	"2024Winter/app/api/global"
 	"2024Winter/app/api/internal/dao"
 	"2024Winter/model"
 	"github.com/gin-gonic/gin"
@@ -20,7 +21,7 @@ func PushGood(c *gin.Context) {
 	var good model.Good
 	err = c.ShouldBind(&good)
 	if err != nil {
-		logger.Warn("shouldBind failed:" + err.Error())
+		global.Logger.Warn("shouldBind failed:" + err.Error())
 		return
 	}
 	var temp = &model.Good{

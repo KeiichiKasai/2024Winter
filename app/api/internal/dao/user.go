@@ -9,12 +9,11 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-var logger = global.Logger
-
+// CreateUser 同时创建用户信息，钱包
 func CreateUser(user *model.UserInfo) error {
 	tx := global.MDB.Begin()
 	if tx.Error != nil {
-		logger.Error("tx open failed")
+		global.Logger.Error("tx open failed")
 		tx.Rollback()
 		return tx.Error
 	}
@@ -22,12 +21,12 @@ func CreateUser(user *model.UserInfo) error {
 	var err error
 	password, err := utils.Encrypt(user.Password)
 	if err != nil {
-		logger.Info("crypt failed:" + err.Error())
+		global.Logger.Info("crypt failed:" + err.Error())
 		return err
 	}
 	phone, err := utils.Encrypt(user.Phone)
 	if err != nil {
-		logger.Info("crypt failed:" + err.Error())
+		global.Logger.Info("crypt failed:" + err.Error())
 		return err
 	}
 	err = tx.Where("username = ?", user.Username).First(&temp).Error
@@ -39,15 +38,25 @@ func CreateUser(user *model.UserInfo) error {
 		Username: user.Username,
 		Password: password,
 		Phone:    phone,
+		Role:     user.Role,
 	}
 	err = tx.Create(&temp).Error
 	if err != nil {
-		logger.Error("mysql insert failed" + err.Error())
+		global.Logger.Error("mysql insert failed" + err.Error())
 		tx.Rollback()
 		return err
 	}
+	w := model.Wallet{
+		Username: user.Username,
+	}
+	if err = tx.Create(&w).Error; err != nil {
+		global.Logger.Error("mysql insert failed" + err.Error())
+		tx.Rollback()
+		return err
+	}
+
 	if err = tx.Commit().Error; err != nil { //提交事务并判断是否成功提交
-		logger.Error("tx close failed")
+		global.Logger.Error("tx close failed")
 		tx.Rollback()
 		return err
 	}
@@ -57,7 +66,7 @@ func GetUserByUsername(username string) (*model.UserInfo, error) {
 	tx := global.MDB.Begin() //开启事务
 
 	if tx.Error != nil { //检查事务是否正常开启
-		logger.Error("tx open failed")
+		global.Logger.Error("tx open failed")
 		tx.Rollback()
 		return nil, tx.Error
 	}
@@ -67,16 +76,17 @@ func GetUserByUsername(username string) (*model.UserInfo, error) {
 		return nil, err
 	}
 	if err := tx.Commit().Error; err != nil {
-		logger.Error("tx close failed")
+		global.Logger.Error("tx close failed")
 		tx.Rollback()
 		return nil, err
 	}
 	return &user, nil
 }
+
 func UpdateUser(user *model.UserInfo) error {
 	tx := global.MDB.Begin()
 	if tx.Error != nil {
-		logger.Error("tx open failed")
+		global.Logger.Error("tx open failed")
 		tx.Rollback()
 		return tx.Error
 	}
@@ -84,12 +94,12 @@ func UpdateUser(user *model.UserInfo) error {
 		Model(&model.UserInfo{}).
 		Updates(user).
 		Where("username = ?", user.Username).Error; err != nil {
-		logger.Warn("update user failed")
+		global.Logger.Warn("update user failed")
 		tx.Rollback()
 		return err
 	}
 	if err := tx.Commit().Error; err != nil { //提交事务并判断是否成功提交
-		logger.Error("tx close failed")
+		global.Logger.Error("tx close failed")
 		tx.Rollback()
 		return err
 	}

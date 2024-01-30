@@ -1,7 +1,7 @@
 package model
 
 type Good struct {
-	Gid      int     `form:"gid,omitempty" gorm:"primaryKey;autoIncrement"`
+	Gid      int     `form:"gid,omitempty" gorm:"primary_key"`
 	Gname    string  `form:"gname,omitempty" gorm:"not null"`
 	Category string  `form:"category,omitempty" gorm:"not null"`
 	Picture  string  `form:"picture,omitempty" gorm:"not null"`
