@@ -3,6 +3,7 @@ package dao
 import (
 	"2024Winter/app/api/global"
 	"2024Winter/model"
+	"fmt"
 )
 
 func SelectCartByUsername(username string) ([]*model.Cart, error) {
@@ -55,6 +56,8 @@ func DeleteCart(username string, gid int) error {
 		tx.Rollback()
 		return tx.Error
 	}
+	fmt.Println(username)
+	fmt.Println(gid)
 	if err := tx.
 		Where("username = ? AND gid = ?", username, gid).
 		Delete(&model.Cart{}).Error; err != nil {

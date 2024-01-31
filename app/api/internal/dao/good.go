@@ -92,3 +92,25 @@ func AddGood(good *model.Good) error {
 	}
 	return nil
 }
+
+func SearchGoodsByGid(gid int) (*model.Good, error) {
+	tx := global.MDB.Begin()
+	if tx.Error != nil {
+		global.Logger.Error("tx open failed")
+		tx.Rollback()
+		return nil, tx.Error
+	}
+	var good model.Good
+	ret := tx.Where("gid = ?", gid).Find(&good)
+	if ret.Error != nil {
+		global.Logger.Info("select goods failed")
+		tx.Rollback()
+		return nil, ret.Error
+	}
+	if err := tx.Commit().Error; err != nil { //提交事务并判断是否成功提交
+		global.Logger.Error("tx close failed")
+		tx.Rollback()
+		return nil, err
+	}
+	return &good, nil
+}

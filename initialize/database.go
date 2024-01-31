@@ -27,6 +27,7 @@ func InitMySQL() {
 	global.MDB.AutoMigrate(&model.Wallet{})
 	global.MDB.AutoMigrate(&model.Cart{})
 	global.MDB.AutoMigrate(&model.UserInfo{})
+	global.MDB.AutoMigrate(&model.Order{})
 	global.Logger.Info("MySQL initial success")
 }
 

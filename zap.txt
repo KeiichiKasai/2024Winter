@@ -75,3 +75,39 @@
 {"level":"\u001b[34mINFO\u001b[0m","ts":"2024-01-30 18:14:08","msg":"zap initial success"}
 {"level":"\u001b[34mINFO\u001b[0m","ts":"2024-01-30 18:14:08","msg":"MySQL initial success"}
 {"level":"\u001b[34mINFO\u001b[0m","ts":"2024-01-30 18:14:08","msg":"Redis initial success"}
+{"level":"\u001b[34mINFO\u001b[0m","ts":"2024-01-31 13:54:53","msg":"zap initial success"}
+{"level":"\u001b[34mINFO\u001b[0m","ts":"2024-01-31 13:54:53","msg":"MySQL initial success"}
+{"level":"\u001b[34mINFO\u001b[0m","ts":"2024-01-31 13:54:53","msg":"Redis initial success"}
+{"level":"\u001b[31mERROR\u001b[0m","ts":"2024-01-31 13:57:11","msg":"mysql select failedunsupported destination, should be slice or struct"}
+{"level":"\u001b[34mINFO\u001b[0m","ts":"2024-01-31 13:58:51","msg":"zap initial success"}
+{"level":"\u001b[34mINFO\u001b[0m","ts":"2024-01-31 13:58:51","msg":"MySQL initial success"}
+{"level":"\u001b[34mINFO\u001b[0m","ts":"2024-01-31 13:58:51","msg":"Redis initial success"}
+{"level":"\u001b[31mERROR\u001b[0m","ts":"2024-01-31 13:59:33","msg":"mysql update failedError 1103: Incorrect table name ''"}
+{"level":"\u001b[31mERROR\u001b[0m","ts":"2024-01-31 14:02:53","msg":"mysql update failedError 1103: Incorrect table name ''"}
+{"level":"\u001b[31mERROR\u001b[0m","ts":"2024-01-31 14:03:18","msg":"mysql update failedError 1103: Incorrect table name ''"}
+{"level":"\u001b[34mINFO\u001b[0m","ts":"2024-01-31 14:04:09","msg":"zap initial success"}
+{"level":"\u001b[34mINFO\u001b[0m","ts":"2024-01-31 14:04:09","msg":"MySQL initial success"}
+{"level":"\u001b[34mINFO\u001b[0m","ts":"2024-01-31 14:04:09","msg":"Redis initial success"}
+{"level":"\u001b[34mINFO\u001b[0m","ts":"2024-01-31 14:18:21","msg":"zap initial success"}
+{"level":"\u001b[34mINFO\u001b[0m","ts":"2024-01-31 14:18:21","msg":"MySQL initial success"}
+{"level":"\u001b[34mINFO\u001b[0m","ts":"2024-01-31 14:18:21","msg":"Redis initial success"}
+{"level":"\u001b[34mINFO\u001b[0m","ts":"2024-01-31 14:19:24","msg":"select goods failed"}
+{"level":"\u001b[34mINFO\u001b[0m","ts":"2024-01-31 14:19:57","msg":"zap initial success"}
+{"level":"\u001b[34mINFO\u001b[0m","ts":"2024-01-31 14:19:57","msg":"MySQL initial success"}
+{"level":"\u001b[34mINFO\u001b[0m","ts":"2024-01-31 14:19:57","msg":"Redis initial success"}
+{"level":"\u001b[34mINFO\u001b[0m","ts":"2024-01-31 14:22:43","msg":"zap initial success"}
+{"level":"\u001b[34mINFO\u001b[0m","ts":"2024-01-31 14:22:43","msg":"MySQL initial success"}
+{"level":"\u001b[34mINFO\u001b[0m","ts":"2024-01-31 14:22:43","msg":"Redis initial success"}
+{"level":"\u001b[34mINFO\u001b[0m","ts":"2024-01-31 14:24:04","msg":"zap initial success"}
+{"level":"\u001b[34mINFO\u001b[0m","ts":"2024-01-31 14:24:04","msg":"MySQL initial success"}
+{"level":"\u001b[34mINFO\u001b[0m","ts":"2024-01-31 14:24:04","msg":"Redis initial success"}
+{"level":"\u001b[34mINFO\u001b[0m","ts":"2024-01-31 14:29:51","msg":"zap initial success"}
+{"level":"\u001b[34mINFO\u001b[0m","ts":"2024-01-31 14:29:51","msg":"MySQL initial success"}
+{"level":"\u001b[34mINFO\u001b[0m","ts":"2024-01-31 14:29:51","msg":"Redis initial success"}
+{"level":"\u001b[34mINFO\u001b[0m","ts":"2024-01-31 15:27:30","msg":"zap initial success"}
+{"level":"\u001b[34mINFO\u001b[0m","ts":"2024-01-31 15:27:30","msg":"MySQL initial success"}
+{"level":"\u001b[34mINFO\u001b[0m","ts":"2024-01-31 15:27:31","msg":"Redis initial success"}
+{"level":"\u001b[31mERROR\u001b[0m","ts":"2024-01-31 15:29:00","msg":"select order failed"}
+{"level":"\u001b[34mINFO\u001b[0m","ts":"2024-01-31 15:30:32","msg":"zap initial success"}
+{"level":"\u001b[34mINFO\u001b[0m","ts":"2024-01-31 15:30:32","msg":"MySQL initial success"}
+{"level":"\u001b[34mINFO\u001b[0m","ts":"2024-01-31 15:30:32","msg":"Redis initial success"}

@@ -3,6 +3,7 @@ package dao
 import (
 	"2024Winter/app/api/global"
 	"2024Winter/model"
+	"time"
 )
 
 func SelectWallet(username string) (*model.Wallet, error) {
@@ -12,10 +13,10 @@ func SelectWallet(username string) (*model.Wallet, error) {
 		tx.Rollback()
 		return nil, tx.Error
 	}
-	var w *model.Wallet
+	var w model.Wallet
 	if err := tx.
 		Where("username = ?", username).
-		Find(w).Error; err != nil {
+		Find(&w).Error; err != nil {
 		global.Logger.Error("mysql select failed" + err.Error())
 		tx.Rollback()
 		return nil, err
@@ -26,7 +27,7 @@ func SelectWallet(username string) (*model.Wallet, error) {
 		tx.Rollback()
 		return nil, err
 	}
-	return w, nil
+	return &w, nil
 }
 
 func UpdateWallet(wallet *model.Wallet) error {
@@ -37,6 +38,7 @@ func UpdateWallet(wallet *model.Wallet) error {
 		return tx.Error
 	}
 	if err := tx.
+		Model(&model.Wallet{}).
 		Where("username = ?", wallet.Username).
 		Update(wallet).Error; err != nil {
 		global.Logger.Error("mysql update failed" + err.Error())
@@ -49,4 +51,81 @@ func UpdateWallet(wallet *model.Wallet) error {
 		return err
 	}
 	return nil
+}
+
+func EmptyCart(carts []*model.Cart, username string, balance float64) error {
+	tx := global.MDB.Begin()
+	if tx.Error != nil {
+		global.Logger.Error("tx open failed")
+		tx.Rollback()
+		return tx.Error
+	}
+	//创建订单并清空购物车
+	for _, cart := range carts {
+		order := model.Order{
+			Username:  username,
+			Gname:     cart.Gname,
+			Price:     cart.Price,
+			Count:     cart.Count,
+			OrderTime: time.Now(),
+		}
+		if err := tx.
+			Model(&model.Order{}).
+			Create(&order).Error; err != nil {
+			global.Logger.Error("order create failed" + err.Error())
+			tx.Rollback()
+			return err
+		}
+		if err := tx.
+			Where("username = ? AND gid = ?", username, cart.Gid).
+			Delete(&model.Cart{}).Error; err != nil {
+			global.Logger.Error("cart delete failed" + err.Error())
+			tx.Rollback()
+			return err
+		}
+	}
+	//更新钱包
+	wallet := model.Wallet{
+		Username: username,
+		Balance:  balance,
+	}
+	if err := tx.
+		Model(&model.Wallet{}).
+		Where("username = ?", username).
+		Update(wallet).Error; err != nil {
+		global.Logger.Error("wallet update failed" + err.Error())
+		tx.Rollback()
+		return err
+	}
+	//提交事务并判断是否成功提交
+	if err := tx.Commit().Error; err != nil {
+		global.Logger.Error("tx close failed")
+		tx.Rollback()
+		return err
+	}
+	return nil
+}
+
+func GetOrder(username string) ([]*model.Order, error) {
+	tx := global.MDB.Begin()
+	if tx.Error != nil {
+		global.Logger.Error("tx open failed")
+		tx.Rollback()
+		return nil, tx.Error
+	}
+	var orders []*model.Order
+	if err := tx.
+		Model(&model.Order{}).
+		Where("username = ?", username).
+		Find(&orders).Error; err != nil {
+		global.Logger.Error("select order failed")
+		tx.Rollback()
+		return nil, tx.Error
+	}
+	if err := tx.Commit().Error; err != nil { //提交事务并判断是否成功提交
+		global.Logger.Error("tx close failed")
+		tx.Rollback()
+		return nil, err
+	}
+	return orders, nil
 }

@@ -1,7 +1,6 @@
 package service
 
 import (
-	"2024Winter/app/api/global"
 	"2024Winter/app/api/internal/dao"
 	"2024Winter/model"
 	"github.com/gin-gonic/gin"
@@ -26,13 +25,25 @@ func GetCart(c *gin.Context) {
 
 func AddCart(c *gin.Context) {
 	username := c.GetString("username")
-	var cart model.Cart
-	err := c.ShouldBind(&cart)
+	gidStr := c.PostForm("gid")
+	countStr := c.PostForm("count")
+	gid, _ := strconv.Atoi(gidStr)
+	count, _ := strconv.Atoi(countStr)
+	good, err := dao.SearchGoodsByGid(gid)
 	if err != nil {
-		global.Logger.Warn("shouldBind failed:" + err.Error())
+		c.JSON(500, gin.H{
+			"code": 0,
+			"msg":  "获取商品信息失败",
+		})
 		return
 	}
-	cart.Username = username
+	cart := model.Cart{
+		Username: username,
+		Gid:      gid,
+		Gname:    good.Gname,
+		Price:    good.Price,
+		Count:    count,
+	}
 	err = dao.CreateCart(&cart)
 	if err != nil {
 		c.JSON(500, gin.H{

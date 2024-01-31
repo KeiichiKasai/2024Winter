@@ -26,15 +26,16 @@ func InitRouter() {
 		u.Use(middleware.JWT(), middleware.CheckRole0())
 		u.GET("/info", service.GetInfo)
 		u.POST("/info", service.ChangeInfo)
-		u.GET("/cart", service.GetCart)
 		u.POST("/recharge", service.Recharge)
 		g := u.Group("/good")
 		{
 			g.GET("/all", service.GetGoods)
 			g.GET("/search", service.SearchGoods)
 			g.POST("/cart", service.AddCart)
+			g.GET("/cart", service.GetCart)
 			g.DELETE("/cart", service.DelCart)
 			g.POST("/trade", service.Buy)
+			g.GET("/order", service.Order)
 		}
 	}
 

@@ -9,6 +9,14 @@ import (
 
 func Buy(c *gin.Context) {
 	username := c.GetString("username")
+	user, _ := dao.GetUserByUsername(username)
+	if user.Address == "未填写" {
+		c.JSON(500, gin.H{
+			"code": 0,
+			"msg":  "未填写收货地址",
+		})
+		return
+	}
 	carts, err := dao.SelectCartByUsername(username)
 	if err != nil {
 		c.JSON(500, gin.H{
@@ -37,17 +45,14 @@ func Buy(c *gin.Context) {
 		return
 	}
 	now := wallet.Balance - sum
-	temp := model.Wallet{
-		Username: username,
-		Balance:  now,
-	}
-	err = dao.UpdateWallet(&temp)
+	err = dao.EmptyCart(carts, username, now)
 	if err != nil {
 		c.JSON(500, gin.H{
 			"code": 0,
 			"msg":  "购买失败",
 		})
 	}
+
 	c.JSON(200, gin.H{
 		"code": 1,
 		"msg":  "购买成功",
@@ -89,5 +94,21 @@ func Recharge(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"code": 1,
 		"msg":  "充值成功",
+	})
+}
+
+func Order(c *gin.Context) {
+	username := c.GetString("username")
+	orders, err := dao.GetOrder(username)
+	if err != nil {
+		c.JSON(500, gin.H{
+			"code": 0,
+			"msg":  "获取订单失败",
+		})
+		return
+	}
+	c.JSON(200, gin.H{
+		"code": 1,
+		"msg":  orders,
 	})
 }
