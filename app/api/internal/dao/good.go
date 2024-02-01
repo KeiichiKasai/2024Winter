@@ -3,6 +3,9 @@ package dao
 import (
 	"2024Winter/app/api/global"
 	"2024Winter/model"
+	"encoding/json"
+	"github.com/gin-gonic/gin"
+	"strconv"
 )
 
 func PutAllGoods() ([]*model.Good, error) {
@@ -26,7 +29,6 @@ func PutAllGoods() ([]*model.Good, error) {
 	}
 	return goods, nil
 }
-
 func SearchGoods(keyword string) ([]*model.Good, error) {
 	tx := global.MDB.Begin()
 	if tx.Error != nil {
@@ -48,7 +50,6 @@ func SearchGoods(keyword string) ([]*model.Good, error) {
 	}
 	return goods, nil
 }
-
 func SearchGoodsByOid(oid int) ([]*model.Good, error) {
 	tx := global.MDB.Begin()
 	if tx.Error != nil {
@@ -70,7 +71,6 @@ func SearchGoodsByOid(oid int) ([]*model.Good, error) {
 	}
 	return goods, nil
 }
-
 func AddGood(good *model.Good) error {
 	tx := global.MDB.Begin()
 	if tx.Error != nil {
@@ -92,7 +92,6 @@ func AddGood(good *model.Good) error {
 	}
 	return nil
 }
-
 func SearchGoodsByGid(gid int) (*model.Good, error) {
 	tx := global.MDB.Begin()
 	if tx.Error != nil {
@@ -113,4 +112,54 @@ func SearchGoodsByGid(gid int) (*model.Good, error) {
 		return nil, err
 	}
 	return &good, nil
+}
+
+/////////////////////////////////////////////////////////////
+
+func SetGood(c *gin.Context, good *model.Good) error {
+	goodJSON, err := json.Marshal(good)
+	if err != nil {
+		global.Logger.Error("good marshal failed,err:" + err.Error())
+		return err
+	}
+	_, err = global.RDB.HSet(c, "goods", strconv.Itoa(good.Gid), goodJSON).Result()
+	if err != nil {
+		if err != nil {
+			global.Logger.Error("good set failed,err:" + err.Error())
+			return err
+		}
+	}
+	return nil
+}
+func GetGood(c *gin.Context, gid int) (*model.Good, error) {
+	goodJSON, err := global.RDB.HGet(c, "goods", strconv.Itoa(gid)).Result()
+	if err != nil {
+		global.Logger.Error("good get failed,err:" + err.Error())
+		return nil, err
+	}
+	var good model.Good
+	err = json.Unmarshal([]byte(goodJSON), &good)
+	if err != nil {
+		global.Logger.Error("good unmarshal failed,err:" + err.Error())
+		return nil, err
+	}
+	return &good, nil
+}
+func GetAllGoods(c *gin.Context) ([]*model.Good, error) {
+	goodsJSON, err := global.RDB.HGetAll(c, "goods").Result()
+	if err != nil {
+		global.Logger.Error("good get failed,err:" + err.Error())
+		return nil, err
+	}
+	var goods []*model.Good
+	for _, v := range goodsJSON {
+		var good model.Good
+		err = json.Unmarshal([]byte(v), &good)
+		if err != nil {
+			global.Logger.Error("good unmarshal failed,err:" + err.Error())
+			return nil, err
+		}
+		goods = append(goods, &good)
+	}
+	return goods, nil
 }

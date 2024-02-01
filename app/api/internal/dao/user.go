@@ -5,11 +5,12 @@ import (
 	"2024Winter/consts"
 	"2024Winter/model"
 	"2024Winter/utils"
+	"encoding/json"
 	"errors"
+	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 )
 
-// CreateUser 同时创建用户信息，钱包
 func CreateUser(user *model.UserInfo) error {
 	tx := global.MDB.Begin()
 	if tx.Error != nil {
@@ -82,7 +83,6 @@ func GetUserByUsername(username string) (*model.UserInfo, error) {
 	}
 	return &user, nil
 }
-
 func UpdateUser(user *model.UserInfo) error {
 	tx := global.MDB.Begin()
 	if tx.Error != nil {
@@ -104,4 +104,34 @@ func UpdateUser(user *model.UserInfo) error {
 		return err
 	}
 	return nil
+}
+
+/////////////////////////////////////////////////////////////////////////////
+
+func SetUser(c *gin.Context, user *model.UserInfo) error {
+	userJSON, err := json.Marshal(user)
+	if err != nil {
+		global.Logger.Error("user_info marshal failed,err:" + err.Error())
+		return err
+	}
+	_, err = global.RDB.Set(c, "user:"+user.Username, userJSON, consts.RedisExpireDuration).Result()
+	if err != nil {
+		global.Logger.Error("user_info set failed,err:" + err.Error())
+		return err
+	}
+	return nil
+}
+func GetUser(c *gin.Context, username string) (*model.UserInfo, error) {
+	userJSON, err := global.RDB.Get(c, "user:"+username).Result()
+	if err != nil {
+		global.Logger.Info("user_info get failed,err:" + err.Error())
+		return nil, err
+	}
+	var user model.UserInfo
+	err = json.Unmarshal([]byte(userJSON), &user)
+	if err != nil {
+		global.Logger.Error("user_info unmarshal failed,err:" + err.Error())
+		return nil, err
+	}
+	return &user, nil
 }

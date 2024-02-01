@@ -2,7 +2,10 @@ package dao
 
 import (
 	"2024Winter/app/api/global"
+	"2024Winter/consts"
 	"2024Winter/model"
+	"encoding/json"
+	"github.com/gin-gonic/gin"
 	"time"
 )
 
@@ -29,7 +32,6 @@ func SelectWallet(username string) (*model.Wallet, error) {
 	}
 	return &w, nil
 }
-
 func UpdateWallet(wallet *model.Wallet) error {
 	tx := global.MDB.Begin()
 	if tx.Error != nil {
@@ -52,7 +54,6 @@ func UpdateWallet(wallet *model.Wallet) error {
 	}
 	return nil
 }
-
 func EmptyCart(carts []*model.Cart, username string, balance float64) error {
 	tx := global.MDB.Begin()
 	if tx.Error != nil {
@@ -105,7 +106,6 @@ func EmptyCart(carts []*model.Cart, username string, balance float64) error {
 	}
 	return nil
 }
-
 func GetOrder(username string) ([]*model.Order, error) {
 	tx := global.MDB.Begin()
 	if tx.Error != nil {
@@ -128,4 +128,34 @@ func GetOrder(username string) ([]*model.Order, error) {
 		return nil, err
 	}
 	return orders, nil
+}
+
+//////////////////////////////////////////////////////////////////////
+
+func SetWallet(c *gin.Context, wallet *model.Wallet) error {
+	walletJSON, err := json.Marshal(wallet)
+	if err != nil {
+		global.Logger.Error("wallet marshal failed,err:" + err.Error())
+		return err
+	}
+	_, err = global.RDB.Set(c, "wallet:"+wallet.Username, walletJSON, consts.RedisExpireDuration).Result()
+	if err != nil {
+		global.Logger.Error("wallet set failed,err:" + err.Error())
+		return err
+	}
+	return nil
+}
+func GetWallet(c *gin.Context, username string) (*model.Wallet, error) {
+	walletJSON, err := global.RDB.Get(c, "wallet:"+username).Result()
+	if err != nil {
+		global.Logger.Info("wallet get failed,err:" + err.Error())
+		return nil, err
+	}
+	var wallet model.Wallet
+	err = json.Unmarshal([]byte(walletJSON), &wallet)
+	if err != nil {
+		global.Logger.Error("wallet unmarshal failed,err:" + err.Error())
+		return nil, err
+	}
+	return &wallet, nil
 }

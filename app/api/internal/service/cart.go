@@ -29,14 +29,19 @@ func AddCart(c *gin.Context) {
 	countStr := c.PostForm("count")
 	gid, _ := strconv.Atoi(gidStr)
 	count, _ := strconv.Atoi(countStr)
-	good, err := dao.SearchGoodsByGid(gid)
+	good, err := dao.GetGood(c, gid)
 	if err != nil {
-		c.JSON(500, gin.H{
-			"code": 0,
-			"msg":  "获取商品信息失败",
-		})
-		return
+		good, err = dao.SearchGoodsByGid(gid)
+		if err != nil {
+			c.JSON(500, gin.H{
+				"code": 0,
+				"msg":  "获取商品信息失败",
+			})
+			return
+		}
+		_ = dao.SetGood(c, good)
 	}
+
 	cart := model.Cart{
 		Username: username,
 		Gid:      gid,

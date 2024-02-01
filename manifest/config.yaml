@@ -7,7 +7,7 @@ mysql_info:
   db_name: "winter"
 redis_info:
   addr: "localhost:6379"
-  password: "zx1913683154"
+  password: ""
 zap_info:
   path: "./zap.txt"
 crypt_info:

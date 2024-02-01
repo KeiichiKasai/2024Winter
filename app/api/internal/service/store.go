@@ -9,13 +9,17 @@ import (
 
 func PushGood(c *gin.Context) {
 	username := c.GetString("username")
-	user, err := dao.GetUserByUsername(username)
+	user, err := dao.GetUser(c, username)
 	if err != nil {
-		c.JSON(500, gin.H{
-			"code": "0",
-			"msg":  "获取个人信息失败",
-		})
-		return
+		user, err = dao.GetUserByUsername(username)
+		if err != nil {
+			c.JSON(500, gin.H{
+				"code": 0,
+				"msg":  "查找用户出错",
+			})
+			return
+		}
+		_ = dao.SetUser(c, user)
 	}
 	oid := user.Uid
 	var good model.Good
@@ -39,6 +43,7 @@ func PushGood(c *gin.Context) {
 		})
 		return
 	}
+	_ = dao.SetGood(c, temp)
 	c.JSON(200, gin.H{
 		"code": "1",
 		"msg":  "添加商品成功",
@@ -47,13 +52,17 @@ func PushGood(c *gin.Context) {
 
 func GetOwnGood(c *gin.Context) {
 	username := c.GetString("username")
-	user, err := dao.GetUserByUsername(username)
+	user, err := dao.GetUser(c, username)
 	if err != nil {
-		c.JSON(500, gin.H{
-			"code": "0",
-			"msg":  "获取个人信息失败",
-		})
-		return
+		user, err = dao.GetUserByUsername(username)
+		if err != nil {
+			c.JSON(500, gin.H{
+				"code": 0,
+				"msg":  "查找用户出错",
+			})
+			return
+		}
+		_ = dao.SetUser(c, user)
 	}
 	oid := user.Uid
 	goods, err := dao.SearchGoodsByOid(oid)

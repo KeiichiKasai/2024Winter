@@ -33,6 +33,7 @@ func Register(c *gin.Context) {
 		})
 		return
 	}
+
 	_, err = dao.GetUserByUsername(user.Username)
 	if err != gorm.ErrRecordNotFound {
 		c.JSON(500, gin.H{
@@ -71,15 +72,19 @@ func LogIn(c *gin.Context) {
 		return
 	}
 	var temp *model.UserInfo
-	temp, err = dao.GetUserByUsername(user.Username)
+	temp, err = dao.GetUser(c, user.Username)
 	if err != nil {
-		c.JSON(500, gin.H{
-			"code":  0,
-			"msg":   "用户不存在",
-			"token": "null",
-		})
-		return
+		temp, err = dao.GetUserByUsername(user.Username)
+		if err != nil {
+			c.JSON(500, gin.H{
+				"code": 0,
+				"msg":  "用户不存在",
+			})
+			return
+		}
+		_ = dao.SetUser(c, temp)
 	}
+
 	password, err := utils.Decrypt(temp.Password)
 	if err != nil {
 		global.Logger.Warn("解密错误：" + err.Error())
@@ -132,21 +137,26 @@ func Forget(c *gin.Context) {
 		})
 		return
 	}
-	usr, err := dao.GetUserByUsername(user.Username)
+	usr, err := dao.GetUser(c, user.Username)
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		usr, err = dao.GetUserByUsername(user.Username)
+		if err != nil {
+			if err == gorm.ErrRecordNotFound {
+				c.JSON(500, gin.H{
+					"code": 0,
+					"msg":  "用户不存在",
+				})
+				return
+			}
 			c.JSON(500, gin.H{
 				"code": 0,
-				"msg":  "用户不存在",
+				"msg":  "查找用户出错",
 			})
 			return
 		}
-		c.JSON(500, gin.H{
-			"code": 0,
-			"msg":  "查找用户出错",
-		})
-		return
+		_ = dao.SetUser(c, usr)
 	}
+
 	phone, err := utils.Decrypt(usr.Phone)
 	if err != nil {
 		global.Logger.Warn("解密错误：" + err.Error())
@@ -194,13 +204,29 @@ func LogOut(c *gin.Context) {
 
 func GetInfo(c *gin.Context) {
 	username := c.GetString("username")
-	user, err := dao.GetUserByUsername(username)
+	user, err := dao.GetUser(c, username)
 	if err != nil {
-		c.JSON(500, gin.H{
-			"code": 0,
-			"msg":  "获取用户个人信息失败",
-		})
-		return
+		user, err = dao.GetUserByUsername(username)
+		if err != nil {
+			c.JSON(500, gin.H{
+				"code": 0,
+				"msg":  "获取用户信息失败",
+			})
+			return
+		}
+		_ = dao.SetUser(c, user)
+	}
+	wallet, err := dao.GetWallet(c, username)
+	if err != nil {
+		wallet, err = dao.SelectWallet(username)
+		if err != nil {
+			c.JSON(500, gin.H{
+				"code": 0,
+				"msg":  "查询钱包失败",
+			})
+			return
+		}
+		_ = dao.SetWallet(c, wallet)
 	}
 	role := "顾客"
 	if user.Role != 0 {
@@ -210,9 +236,10 @@ func GetInfo(c *gin.Context) {
 		"code": 1,
 		"msg": gin.H{
 			"Uid":      user.Uid,
+			"Role":     role,
 			"Username": user.Username,
 			"Address":  user.Address,
-			"Role":     role,
+			"Balance":  wallet.Balance,
 		},
 	})
 }
@@ -220,13 +247,24 @@ func GetInfo(c *gin.Context) {
 func ChangeInfo(c *gin.Context) {
 	address := c.PostForm("address")
 	username := c.GetString("username")
-	usr, err := dao.GetUserByUsername(username)
+	usr, err := dao.GetUser(c, username)
 	if err != nil {
-		c.JSON(500, gin.H{
-			"code": 0,
-			"msg":  "获取用户个人信息失败",
-		})
-		return
+		usr, err = dao.GetUserByUsername(username)
+		if err != nil {
+			if err == gorm.ErrRecordNotFound {
+				c.JSON(500, gin.H{
+					"code": 0,
+					"msg":  "用户不存在",
+				})
+				return
+			}
+			c.JSON(500, gin.H{
+				"code": 0,
+				"msg":  "查找用户出错",
+			})
+			return
+		}
+		_ = dao.SetUser(c, usr)
 	}
 	temp := &model.UserInfo{
 		Uid:      usr.Uid,

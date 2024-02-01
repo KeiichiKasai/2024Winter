@@ -9,13 +9,16 @@ import (
 func GetGoods(c *gin.Context) {
 	var goods []*model.Good
 	var err error
-	goods, err = dao.PutAllGoods()
+	goods, err = dao.GetAllGoods(c)
 	if err != nil {
-		c.JSON(500, gin.H{
-			"code": "0",
-			"msg":  "获取商品失败",
-		})
-		return
+		goods, err = dao.PutAllGoods()
+		if err != nil {
+			c.JSON(500, gin.H{
+				"code": "0",
+				"msg":  "获取商品失败",
+			})
+			return
+		}
 	}
 	c.JSON(200, gin.H{
 		"code": "1",

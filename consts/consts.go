@@ -4,6 +4,6 @@ import "time"
 
 const (
 	MySQLExist          = "mysql exist"
-	RedisExist          = "Redis exist"
 	TokenExpireDuration = time.Hour * 2
+	RedisExpireDuration = time.Minute * 30
 )

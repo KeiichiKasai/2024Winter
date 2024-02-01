@@ -27,7 +27,6 @@ func SelectCartByUsername(username string) ([]*model.Cart, error) {
 	}
 	return carts, nil
 }
-
 func CreateCart(cart *model.Cart) error {
 	tx := global.MDB.Begin()
 	if tx.Error != nil {
@@ -48,7 +47,6 @@ func CreateCart(cart *model.Cart) error {
 	}
 	return nil
 }
-
 func DeleteCart(username string, gid int) error {
 	tx := global.MDB.Begin()
 	if tx.Error != nil {
@@ -72,3 +70,5 @@ func DeleteCart(username string, gid int) error {
 	}
 	return nil
 }
+
+///////////////////////////////////////////////////////////
