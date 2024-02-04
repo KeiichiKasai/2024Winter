@@ -8,7 +8,10 @@ func CheckRole1() func(c *gin.Context) {
 	return func(c *gin.Context) {
 		role := c.GetString("role")
 		if role != "1" {
-			c.JSON(500, "无权限")
+			c.JSON(500, gin.H{
+				"code": 0,
+				"msg":  "无权限访问",
+			})
 			c.Abort()
 			return
 		}
@@ -19,7 +22,10 @@ func CheckRole0() func(c *gin.Context) {
 	return func(c *gin.Context) {
 		role := c.GetString("role")
 		if role != "0" {
-			c.JSON(500, "无权限")
+			c.JSON(500, gin.H{
+				"code": 0,
+				"msg":  "无权限访问",
+			})
 			c.Abort()
 			return
 		}

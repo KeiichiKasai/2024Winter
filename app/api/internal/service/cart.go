@@ -39,7 +39,6 @@ func AddCart(c *gin.Context) {
 			})
 			return
 		}
-		_ = dao.SetGood(c, good)
 	}
 
 	cart := model.Cart{

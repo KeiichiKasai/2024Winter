@@ -1,6 +1,0 @@
-{"level":"\u001b[34mINFO\u001b[0m","ts":"2024-02-01 13:08:55","msg":"zap initial success"}
-{"level":"\u001b[34mINFO\u001b[0m","ts":"2024-02-01 13:08:55","msg":"MySQL initial success"}
-{"level":"\u001b[34mINFO\u001b[0m","ts":"2024-02-01 13:08:55","msg":"Redis initial success"}
-{"level":"\u001b[34mINFO\u001b[0m","ts":"2024-02-01 13:09:21","msg":"user_info get failed,err:redis: nil"}
-{"level":"\u001b[34mINFO\u001b[0m","ts":"2024-02-01 13:11:01","msg":"user_info get failed,err:redis: nil"}
-{"level":"\u001b[34mINFO\u001b[0m","ts":"2024-02-01 13:11:22","msg":"wallet get failed,err:redis: nil"}

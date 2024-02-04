@@ -44,12 +44,12 @@ func ParseToken(tokenStr string) (*MyClaims, error) {
 	return nil, errors.New("invalid token")
 }
 
-func JWT() func(c *gin.Context) {
+func JWT() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.Request.Header.Get("Authorization")
 		if authHeader == "" {
 			c.JSON(http.StatusOK, gin.H{
-				"code": 2003,
+				"code": 0,
 				"msg":  "请求头中auth为空",
 			})
 			c.Abort()
@@ -60,7 +60,7 @@ func JWT() func(c *gin.Context) {
 
 		if !(len(parts) == 2 && parts[0] == "Bearer") {
 			c.JSON(http.StatusOK, gin.H{
-				"code": 2004,
+				"code": 0,
 				"msg":  "请求头中auth格式有误",
 			})
 			c.Abort()
@@ -71,7 +71,7 @@ func JWT() func(c *gin.Context) {
 
 		if err != nil {
 			c.JSON(http.StatusOK, gin.H{
-				"code": 2005,
+				"code": 0,
 				"msg":  "无效的Token",
 			})
 			c.Abort()

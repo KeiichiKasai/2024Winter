@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <title>用户登录</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .card {
+      width: 400px;
+      padding: 20px;
+      box-shadow: 0 0 10px #ccc;
+    }
+    h1 {
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <span class="navbar-brand mb-0 h1">蓝山购物平台</span>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav">
+      <li class="nav-item active">
+        <a class="nav-link" href="http://localhost:8080/register">注册 <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="http://localhost:8080/404">商品</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="http://localhost:8080/404">购物车</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="http://localhost:8080/404">个人中心</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="card">
+    <h1>用户登录</h1>
+    <form id="register-form">
+      <div class="form-group">
+        <label for="username">用户名：</label>
+        <input type="text" class="form-control" id="username" required>
+      </div>
+      <div class="form-group">
+        <label for="password">密码：</label>
+        <input type="password" class="form-control" id="password" required>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">登录</button>
+    </form>
+  </div>
+</div>
+
+<script src="https://cdn.bootcss.com/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+  $(function() {
+    $("#register-form").submit(function(e) {
+      e.preventDefault();
+      var username = $("#username").val();
+      var password = $("#password").val();
+
+      $.post({
+        url: "http://localhost:8080/login",
+        data: {
+          username: username,
+          password: password,
+        },
+        success: function(data) {
+          if (data.code === 1) {
+            alert("登录成功！");
+            localStorage.setItem("token", data.token);
+            window.location.href = "http://localhost:8080/info";
+          } else {
+            alert("登录失败：" + data.msg);
+          }
+        },
+        error: function() {
+          alert("网络错误，请稍后重试！");
+        }
+      });
+    });
+  });
+</script>
+</body>
+</html>

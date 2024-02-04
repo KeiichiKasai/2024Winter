@@ -20,7 +20,7 @@ func InitMySQL() {
 	var err error
 	global.MDB, err = gorm.Open("mysql", dsn)
 	if err != nil {
-		global.Logger.Error("MySQL initial failed")
+		global.Logger.Error("MySQL initial failed:" + err.Error())
 		return
 	}
 	global.MDB.AutoMigrate(&model.Good{})

@@ -203,6 +203,7 @@ func LogOut(c *gin.Context) {
 }
 
 func GetInfo(c *gin.Context) {
+
 	username := c.GetString("username")
 	user, err := dao.GetUser(c, username)
 	if err != nil {
@@ -242,6 +243,7 @@ func GetInfo(c *gin.Context) {
 			"Balance":  wallet.Balance,
 		},
 	})
+
 }
 
 func ChangeInfo(c *gin.Context) {

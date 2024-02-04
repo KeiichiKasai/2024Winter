@@ -38,14 +38,14 @@ func PushGood(c *gin.Context) {
 	err = dao.AddGood(temp)
 	if err != nil {
 		c.JSON(500, gin.H{
-			"code": "0",
+			"code": 0,
 			"msg":  "添加商品失败",
 		})
 		return
 	}
 	_ = dao.SetGood(c, temp)
 	c.JSON(200, gin.H{
-		"code": "1",
+		"code": 1,
 		"msg":  "添加商品成功",
 	})
 }
@@ -68,13 +68,13 @@ func GetOwnGood(c *gin.Context) {
 	goods, err := dao.SearchGoodsByOid(oid)
 	if err != nil {
 		c.JSON(500, gin.H{
-			"code": "0",
+			"code": 0,
 			"msg":  "获取商品信息失败",
 		})
 		return
 	}
 	c.JSON(200, gin.H{
-		"code": "1",
+		"code": 1,
 		"msg":  goods,
 	})
 }
